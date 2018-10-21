@@ -1,0 +1,15 @@
+RADIUS HTTP/2 proxy lib
+
+Dependencies:
+
+libnghttp2-dev
+libcurl-dev (7.58 or above)
+libevent-dev
+
+Installation:
+
+autoreconf -i
+./configure
+make
+make install
+
