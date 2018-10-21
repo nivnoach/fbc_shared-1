@@ -14,7 +14,6 @@ const char * hostname_get() {
     return g_hostname;
 }
 
-#ifdef LOG_TO_SCRIBE
 const char* radius_code_to_str(RADIUS_CODE radius_code) {
     switch(radius_code) {
         case RADIUS_CODE_ACCESS_REQUEST:
@@ -45,6 +44,8 @@ const char* radius_code_to_str(RADIUS_CODE radius_code) {
             return "unknown";
     }
 }
+
+#ifdef LOG_TO_SCRIBE
 
 // Profiling methods
 prof* prof_start(char* event_name, RADIUS_CODE radius_code) {

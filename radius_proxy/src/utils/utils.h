@@ -92,6 +92,8 @@ prof * prof_start(char* event_name, RADIUS_CODE radius_code);
 void prof_end_ok(prof* p);
 void prof_end_err(prof* p, int error_code);
 
+const char* radius_code_to_str(int radius_code);
+
 /////////////////////////////////////////////////////////////////////
 // define macros based on logging format
 //
@@ -102,7 +104,6 @@ void prof_end_err(prof* p, int error_code);
 
 #ifdef LOG_TO_SCRIBE
 #include <time.h>
-const char* radius_code_to_str(int radius_code);
 #define LOG_FMT "{ \
                     \"int\": { \
                         \"time\": %lu, \
@@ -165,7 +166,10 @@ const char* radius_code_to_str(int radius_code);
 #define RAD_PROXY_LOG_TRACE(fmt, ...) do { if (debug_verbosity) fprintf(stderr, "[TRACE][%s:%d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (0);
 #define RAD_PROXY_LOG_ERR(fmt, ...) do { fprintf(stderr, "[ERROR][%s:%d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (0);
 #define RAD_PROXY_LOG_METRIC(unit, level, metric, value, error_code, radius_code, ...)
-#define RAD_PROXY_LOG_RADIUS_MSG(code, id, len, source, target)
+#define RAD_PROXY_LOG_RADIUS_MSG(code, id, len, source, target) \
+        fprintf(stderr, "[RADIUS][%s:%d] (%02d) %s | id %d | %d bytes| %s ==> %s\n", \
+        __FILE__, __LINE__, code, radius_code_to_str(code), \
+        id, len, source, target)
 #endif
 
 /////////////////////////////////////////////////////////////////////
