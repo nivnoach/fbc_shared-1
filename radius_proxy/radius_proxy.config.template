@@ -1,0 +1,17 @@
+#
+# This is a template file for configuration of RADIUS-HTTP proxy service
+#
+partner_short_name ${PARTNER_SHORT_NAME}
+sse_client_mac_address="00:00:00:00:00:00"
+sse_timeout_secs=45
+req_listen_ip=0.0.0.0
+radius_packet_encoding=base64/binary
+#you can use space as delimiter
+auth_graph_api ${XWF_GRAPH_API_BASE_URL}/v3.0/radius/authorization?access_token=${PARTNER_ACCESS_TOKEN}
+acct_graph_api=${XWF_GRAPH_API_BASE_URL}/v3.0/radius/accounting?access_token=${PARTNER_ACCESS_TOKEN}
+coa_ack_graph_api=${XWF_GRAPH_API_BASE_URL}/v3.0/radius/coa_response?access_token=${PARTNER_ACCESS_TOKEN}
+coa_sse_api=https://streaming-graph.facebook.com/xwf_coa_subscribe?access_token=${PARTNER_ACCESS_TOKEN}
+auth_port=${RADIUS_AUTH_PORT}
+acct_port ${RADIUS_ACCT_PORT}
+coa_port 3799
+coa_handling 2
