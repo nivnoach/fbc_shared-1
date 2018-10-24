@@ -153,8 +153,7 @@ coa_request_send(coa_sse_handler_t* coa_handler, char* buf, size_t len) {
   radius_packet = decode_radius_packet(buf, len, &packet_len);
   GO_TO_ERR_ON_MALLOC_FAIL(radius_packet, out);
 
-
-  switch (conf_opts.coa_handling) {
+  switch (conf_opts.coa_ip_address_source) {
     case COA_SEND_TO_REQ_LISTEN_IP:
       break;
     case COA_SEND_TO_NAS_IP_ADDRESS:

@@ -2,7 +2,7 @@
 # This is a template file for configuration of RADIUS-HTTP proxy service
 #
 partner_short_name ${PARTNER_SHORT_NAME}
-sse_client_mac_address="00:00:00:00:00:00"
+sse_client_mac_address=${ETH0_MAC_ADDR}
 sse_timeout_secs=45
 req_listen_ip=0.0.0.0
 radius_packet_encoding=base64/binary
@@ -14,4 +14,4 @@ coa_sse_api=https://streaming-graph.facebook.com/xwf_coa_subscribe?access_token=
 auth_port=${RADIUS_AUTH_PORT}
 acct_port ${RADIUS_ACCT_PORT}
 coa_port 3799
-coa_handling 2
+coa_ip_address_source 2

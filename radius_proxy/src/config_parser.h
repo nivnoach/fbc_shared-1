@@ -39,6 +39,7 @@
 #define DEF_ACCT_PORT "1813"
 #define DEF_COA_PORT "3799"
 #define DEF_EMPTY_STR ""
+#define DEF_COA_IP_ADDR_SOURCE "1"
 
 #define SSE_CLIENT_MAC_HEADER "sse-client-mac-address"
 #define RAD_PACK_ENC_HEADER "radius-packet-encoding"
@@ -70,7 +71,7 @@ struct config_options {
   int auth_port;
   int acct_port;
   int coa_port;
-  int coa_handling;
+  int coa_ip_address_source;
 } __attribute__((packed));
 
 typedef struct config_options config_options_t;
@@ -83,10 +84,10 @@ typedef enum _config_opt_type {
   CONFIG_FIELD_TYPES_NUM,
 } config_opt_type;
 
-typedef enum _coa_handling_type {
+typedef enum _coa_ip_address_source {
   COA_SEND_TO_REQ_LISTEN_IP = 1,
   COA_SEND_TO_NAS_IP_ADDRESS = 2,
-} coa_handling_type;
+} coa_ip_address_source_type;
 
 struct config_opt {
   char* name;

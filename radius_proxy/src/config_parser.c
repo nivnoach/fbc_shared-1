@@ -106,13 +106,12 @@ static struct config_opt opts[] = {
      &conf_opts.coa_port,
      "RADIUS CoA request port",
      DEF_COA_PORT},
-    {"coa_handling",
-     CONFIG_FIELD_INTEGER,
-     sizeof(conf_opts.coa_handling),
-     &conf_opts.coa_handling,
-     "1 = CoA relayed to req_listen_ip (single AP), " \
-     "2 = CoA relayed to NAS-Ip-Address (multi-AP support)",
-     0},
+     {"coa_ip_address_source",
+      CONFIG_FIELD_INTEGER,
+      sizeof(conf_opts.coa_ip_address_source),
+      &conf_opts.coa_ip_address_source,
+      "Determine the source of the IP to sent CoA to",
+      DEF_COA_IP_ADDR_SOURCE},
   };
 
 static int args_count = sizeof(opts) / sizeof(struct config_opt);
