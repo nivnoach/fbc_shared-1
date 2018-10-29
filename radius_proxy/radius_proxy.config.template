@@ -2,7 +2,7 @@
 # This is a template file for configuration of RADIUS-HTTP proxy service
 #
 partner_short_name ${PARTNER_SHORT_NAME}
-sse_client_mac_address=${ETH0_MAC_ADDR}
+sse_client_mac_address=${SSE_CLIENT_MAC}
 sse_timeout_secs=45
 req_listen_ip=0.0.0.0
 radius_packet_encoding=base64/binary
