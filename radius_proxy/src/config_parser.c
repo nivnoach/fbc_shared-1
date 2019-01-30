@@ -344,7 +344,7 @@ char config_type_str[][TYPE_STR_LEN] = {
 char* get_config_opts_desc(const char* prefix) {
   int i = 0;
   int desc_len = 0;
-  char* ret;
+  char* ret, *p;
 
   if (!prefix) {
     RAD_PROXY_LOG_ERR("Invalid prefix given");
@@ -362,11 +362,11 @@ char* get_config_opts_desc(const char* prefix) {
     return NULL;
   ret[0] = 0;
 
+  p = ret;
   for (i = 0; i < args_count; i++) {
-    sprintf(
-        ret,
-        "%s%s%s (%s) : %s.\n",
-        ret,
+    p += sprintf(
+        p,
+        "%s%s (%s) : %s.\n",
         prefix,
         opts[i].name,
         config_type_str[opts[i].type],
