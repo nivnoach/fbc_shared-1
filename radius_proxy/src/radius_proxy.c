@@ -109,7 +109,7 @@ char* decode_radius_packet(char* buf, size_t len, size_t* packet_len) {
   char* dec_buf = b64_decode_ex(buf, len, &dec_buf_len);
   GO_TO_ERR_ON_MALLOC_FAIL(dec_buf, b64_dec_err);
 
-  memcpy(&packet, dec_buf, dec_buf_len);
+  memcpy(&packet, dec_buf, MIN(dec_buf_len, sizeof(packet)));
   log_radius_packet(&packet, "Decoding RADIUS packet", DOWNSTREAM);
   *packet_len = htons(packet.len);
   return dec_buf;
@@ -163,7 +163,7 @@ char* encode_radius_packet(char* buf, size_t len) {
     RAD_PROXY_LOG_ERR("Received NULL parameter");
     return NULL;
   }
-  memcpy(&packet, buf, len);
+  memcpy(&packet, buf, MIN(len, sizeof(packet)));
   log_radius_packet(&packet, "Encoding RADIUS packet", UPSTREAM);
   char* enc_buf = b64_encode(buf, len);
   GO_TO_ERR_ON_MALLOC_FAIL(enc_buf, b64_enc_err);

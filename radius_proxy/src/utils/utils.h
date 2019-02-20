@@ -40,6 +40,13 @@ extern int debug_verbosity;
 #define CURL_DEBUG_OPT 0
 #endif
 
+#ifndef MIN
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef MAX
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
+
 void hostname_init();
 const char * hostname_get();
 
