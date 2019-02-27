@@ -65,6 +65,9 @@ b64_encode (const char *src, size_t len) {
       // part by index from the base 64 index table
       // into `enc' char array
       enc = (char *) b64_realloc(enc, size + 4);
+      if (enc == NULL) {
+        return NULL;
+      }
       for (i = 0; i < 4; ++i) {
         enc[size++] = b64_table[(unsigned char)buf[i]];
       }
@@ -90,6 +93,9 @@ b64_encode (const char *src, size_t len) {
     // perform same write to `enc` with new allocation
     for (j = 0; (j < i + 1); ++j) {
       enc = (char *) b64_realloc(enc, size + 1);
+      if (enc == NULL) {
+        return NULL;
+      }
       enc[size++] = b64_table[(unsigned char)buf[j]];
     }
 
@@ -97,12 +103,18 @@ b64_encode (const char *src, size_t len) {
     // append `=' to `enc'
     while ((i++ < 3)) {
       enc = (char *) b64_realloc(enc, size + 1);
+      if (enc == NULL) {
+        return NULL;
+      }
       enc[size++] = '=';
     }
   }
 
   // Make sure we have enough space to add '\0' character at end.
   enc = (char *) b64_realloc(enc, size + 1);
+  if (enc == NULL) {
+    return NULL;
+  }
   enc[size] = '\0';
 
   return enc;
