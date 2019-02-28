@@ -246,9 +246,10 @@ udp_radius_cb(struct ev_loop* loop, struct ev_io* io, int revents, char* url) {
   }
   radius_proxy_context_t* context =
       (radius_proxy_context_t*)malloc(sizeof(radius_proxy_context_t));
+  GO_TO_ERR_ON_MALLOC_FAIL(context, radius_proxy_context_err);
+
   uint8_t radius_code = (buf == NULL) ? 0 : ((radius_packet_t*)buf)->code;
   context->profiling = prof_start("HTTP_REQUEST", radius_code);
-  GO_TO_ERR_ON_MALLOC_FAIL(context, radius_proxy_context_err);
   encoded_packet = encode_radius_packet(buf, len);
   GO_TO_ERR_ON_MALLOC_FAIL(encoded_packet, encode_radius_err);
   context->fd = io->fd;
