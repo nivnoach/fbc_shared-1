@@ -283,7 +283,7 @@ http2_request_handler_t* init_http2_request_handler(struct ev_loop* loop) {
 
   request_handler->loop = loop;
   request_handler->multi = curl_multi_init();
-  GO_TO_ERR_ON_MALLOC_FAIL(request_handler, curl_multi_init_err);
+  GO_TO_ERR_ON_MALLOC_FAIL(request_handler->multi, curl_multi_init_err);
 
   ev_timer_init(&request_handler->timer_event, timer_cb, 0., 0.);
   request_handler->timer_event.data = request_handler;
@@ -456,7 +456,7 @@ int set_post_data(http2_request_t* request, char* data) {
     return HTTP2_RH_ERROR;
   }
   request->data = strdup(data);
-  GO_TO_ERR_ON_MALLOC_FAIL(request->url, strdup_err);
+  GO_TO_ERR_ON_MALLOC_FAIL(request->data, strdup_err);
 
   rc = curl_easy_setopt(request->easy, CURLOPT_POSTFIELDS, request->data);
   GO_TO_ON_ASSERT(
