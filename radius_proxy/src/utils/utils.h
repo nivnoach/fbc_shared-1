@@ -172,7 +172,8 @@ const char* radius_code_to_str(int radius_code);
 #define RAD_PROXY_LOG_PII_ERR(fmt, ...) RAD_PROXY_LOG_ERR(fmt, ##__VA_ARGS__)
 #define RAD_PROXY_LOG_TRACE(fmt, ...) do { if (debug_verbosity) fprintf(stderr, "[TRACE][%s:%d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (0);
 #define RAD_PROXY_LOG_ERR(fmt, ...) do { fprintf(stderr, "[ERROR][%s:%d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (0);
-#define RAD_PROXY_LOG_METRIC(unit, level, metric, value, error_code, radius_code, ...)
+#define RAD_PROXY_LOG_METRIC(unit, level, metric, value, error_code, radius_code, ...) do \
+  { fprintf(stderr, "[METRIC] %s: %d %s (level=%s, error_code=%d, radius_code=%d)\n", metric, value, unit, level, error_code, radius_code); } while(0);
 #define RAD_PROXY_LOG_RADIUS_MSG(code, id, len, source, target) \
         fprintf(stderr, "[RADIUS][%s:%d] (%02d) %s | id %d | %d bytes| %s ==> %s\n", \
         __FILE__, __LINE__, code, radius_code_to_str(code), \
