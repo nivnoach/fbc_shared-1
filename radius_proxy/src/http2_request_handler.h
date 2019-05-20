@@ -48,6 +48,7 @@ typedef struct _http2_response {
   short is_stream;
   on_response_cb_t response_cb;
   size_t content_len;
+  long status_code;
 } http2_response_t;
 
 typedef struct _http2_request_handler {

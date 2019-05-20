@@ -255,12 +255,28 @@ static size_t write_cb(void* ptr, size_t size, size_t nmemb, void* data) {
     // TODO: add proper logging in this case.
     return 0;
   }
+
   memcpy(&(req->response->body[req->response->len]), buf, realsize);
   req->response->len += realsize;
   req->response->body[req->response->len] = 0;
   if (req->response->content_len != 0 &&
       req->response->len >= req->response->content_len) {
+    // Log data 
     RAD_PROXY_LOG_PII_TRACE("Recieved response: %s", req->response->body);
+
+    // Get HTTP response code
+    CURLcode s = curl_easy_getinfo(
+      req->easy,
+      CURLINFO_RESPONSE_CODE,
+      &req->response->status_code
+    );
+    if (s != CURLE_OK) {
+      RAD_PROXY_LOG_METRIC("", "FAILURE", "get_http_status", -1, -1, -1);
+    } else {
+      RAD_PROXY_LOG_METRIC("", "SUCCESS", "get_http_status", (int)req->response->status_code, -1, -1);
+    }
+
+    // Call response handler callback
     req->response->response_cb(
         req->response->headers,
         req->response->body,
