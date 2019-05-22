@@ -50,16 +50,6 @@ extern int debug_verbosity;
 void hostname_init();
 const char * hostname_get();
 
-// utility method to replace a char with another in a string.
-// replaces all occurences
-static inline void replace_char(char * s, char replace, char replace_with) {
-    for(int i = 0; s[i] != 0; i++) {
-        if (s[i] == replace) {
-            s[i] = replace_with;
-        }
-    }
-}
-
 // RADIUS Codes
 typedef int RADIUS_CODE;
 
@@ -78,17 +68,19 @@ typedef int RADIUS_CODE;
 #define RADIUS_CODE_COA_NACK 45
 
 //////////////////////////////////////////////////////////////////////
-// profiling type. to emit profiling logs, use the following pattern:
+// profiling interface
+// to emit profiling logs, use the following pattern:
 //
-// prof op_prof = prof_start("Event Name", RADIUS_CODE_NONE);
-// /* do operation */
-// if (fail) {
-//  prof_end_err(op_prof, 7018);
-// } else {
-//  prof_end_ok(op_prof);
-// }
+//     prof op_prof = prof_start("Event Name", RADIUS_CODE_NONE);
 //
-
+//     int err_code = do_operation();
+//
+//     if (fail) {
+//       prof_end_err(op_prof, err_code);
+//     } else {
+//       prof_end_ok(op_prof);
+//     }
+//
 typedef struct _prof {
     int start_time;
     char * event_name;
@@ -99,85 +91,18 @@ prof * prof_start(char* event_name, RADIUS_CODE radius_code);
 void prof_end_ok(prof* p);
 void prof_end_err(prof* p, int error_code);
 
-const char* radius_code_to_str(int radius_code);
+//////////////////////////////////////////////////////////////////////
+// Utility method for converting radius code to a string, for example:
+//   radius_code_to_str(RADIUS_CODE_COA) ==> "coa"
+// 
+const char* radius_code_to_str(RADIUS_CODE radius_code);
 
 /////////////////////////////////////////////////////////////////////
-// define macros based on logging format
-//
-#define DEFAULT_LOG_VALUE -1
-#define DEFAULT_LOG_RADIUS_CODE -1
-#define DEFAULT_LOG_ERROR_CODE -1
-#define DEFAULT_LOG_LENGTH -1
-
+// define logging macros
 #ifdef LOG_TO_SCRIBE
-#include <time.h>
-#define LOG_FMT "{ \
-                    \"int\": { \
-                        \"time\": %lu, \
-                        \"file_line\": %d, \
-                        \"value\": %d, \
-                        \"radius_code\": %d, \
-                        \"error_code\": %d, \
-                        \"length\": %d \
-                    }, \
-                    \"normal\": { \
-                        \"hostname\": \"%s\", \
-                        \"level\": \"%s\", \
-                        \"event_name\": \"%s\", \
-                        \"radius_type\": \"%s\", \
-                        \"file_name\": \"%s\", \
-                        \"message\": \"%s\", \
-                        \"unit\":\"%s\", \
-                        \"source\":\"%s\", \
-                        \"target\":\"%s\", \
-                        \"partner_short_name\": \"%s\" \
-                    } \
-                }\n"
-#define RAD_PROXY_LOG(level, event, fmt, ...) \
-  do { \
-    char __a_msg[1024]; \
-    sprintf(__a_msg, fmt, ##__VA_ARGS__); \
-    replace_char(__a_msg, '"', '\''); \
-    fprintf(stdout, LOG_FMT, \
-            (unsigned long)time(NULL), __LINE__, DEFAULT_LOG_VALUE, \
-            DEFAULT_LOG_RADIUS_CODE, DEFAULT_LOG_ERROR_CODE, DEFAULT_LOG_LENGTH, \
-            hostname_get(), level, event, "", __FILE__, \
-            (char*)__a_msg, "", "", "", conf_opts.partner_short_name); \
-  } while (0);
-#define RAD_PROXY_LOG_PII_TRACE(fmt, ...)
-#define RAD_PROXY_LOG_PII_ERR(fmt, ...)
-#define RAD_PROXY_LOG_TRACE(fmt, ...) \
-  RAD_PROXY_LOG("TRACE", "LOG", fmt, ##__VA_ARGS__)
-#define RAD_PROXY_LOG_ERR(fmt, ...) \
-  RAD_PROXY_LOG("ERROR", "LOG", fmt, ##__VA_ARGS__)
-#define RAD_PROXY_LOG_METRIC(unit, level, metric, value, error_code, radius_code, ...) \
-    do { \
-      fprintf(stdout, LOG_FMT, \
-            (unsigned long)time(NULL), __LINE__, value, radius_code, error_code, \
-            DEFAULT_LOG_LENGTH, \
-            hostname_get(), level, metric, radius_code_to_str(radius_code), \
-            __FILE__, "", unit, "", "", conf_opts.partner_short_name); \
-    } while (0);
-#define RAD_PROXY_LOG_RADIUS_MSG(radius_code, id, len, source, target) \
-    do { \
-      fprintf(stdout, LOG_FMT, \
-            (unsigned long)time(NULL), __LINE__, DEFAULT_LOG_VALUE, radius_code, \
-            DEFAULT_LOG_ERROR_CODE, len, \
-            hostname_get(), "DEBUG", "RADIUS_MSG", \
-            radius_code_to_str(radius_code), __FILE__, "", "", \
-            source, target, conf_opts.partner_short_name); \
-    } while (0);
+#include "logging_scribe.h"
 #else
-#define RAD_PROXY_LOG_PII_TRACE(fmt, ...) RAD_PROXY_LOG_TRACE(fmt, ##__VA_ARGS__)
-#define RAD_PROXY_LOG_PII_ERR(fmt, ...) RAD_PROXY_LOG_ERR(fmt, ##__VA_ARGS__)
-#define RAD_PROXY_LOG_TRACE(fmt, ...) do { if (debug_verbosity) fprintf(stderr, "[TRACE][%s:%d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (0);
-#define RAD_PROXY_LOG_ERR(fmt, ...) do { fprintf(stderr, "[ERROR][%s:%d] " fmt, __FILE__, __LINE__, ##__VA_ARGS__); fprintf(stderr, "\n"); } while (0);
-#define RAD_PROXY_LOG_METRIC(unit, level, metric, value, error_code, radius_code, ...) do \
-  { fprintf(stderr, "[METRIC] %s: %d %s (level=%s, error_code=%d, radius_code=%d)\n", metric, value, unit, level, error_code, radius_code); } while(0);
-#define RAD_PROXY_LOG_RADIUS_MSG(code, id, len, source, target) \
-        fprintf(stderr, "[RADIUS][%s:%d] (%02d) %s | id %d | %d bytes| %s ==> %s\n", \
-        __FILE__, __LINE__, code, radius_code_to_str(code), \
-        id, len, source, target)
+#include "logging_stdout.h"
 #endif
 
 /////////////////////////////////////////////////////////////////////
