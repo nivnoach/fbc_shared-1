@@ -33,7 +33,7 @@ static struct config_opt opts[] = {
     sizeof(conf_opts.partner_short_name),
     conf_opts.partner_short_name,
     "(Optional) The short name of the partner. Used for logging",
-    NULL},
+    ""},
     {"req_listen_ip",
      CONFIG_FIELD_IPV4,
      sizeof(conf_opts.req_listen_ip),
